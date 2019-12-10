@@ -29,7 +29,7 @@ class AmplificationCircuitTest extends FlatSpec {
   }
 
   "Max thruster with program from file " should "be 3" in {
-    assert(AmplificationCircuit.findMax(Source.fromResource("AmplificationCircuit.txt").getLines().toVector.flatMap(_.split(",")).map(_.toInt)) === 880726)
+    assert(AmplificationCircuit.findMax(Source.fromResource("AmplificationCircuit.txt").getLines().toVector.flatMap(_.split(",")).map(_.toLong)) === 880726L)
   }
 
   "Max thruster signal for phase setting sequence 9,8,7,6,5 with program 3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5 " should "be 139629729" in {
@@ -41,6 +41,6 @@ class AmplificationCircuitTest extends FlatSpec {
   }
 
   "Max thruster with program using loop feedback from file  " should "be 4931744" in {
-    assert(AmplificationCircuit.findMaxWithLoop(Source.fromResource("AmplificationCircuit.txt").getLines().toVector.flatMap(_.split(",")).map(_.toInt)) === 4931744)
+    assert(AmplificationCircuit.findMaxWithLoop(Source.fromResource("AmplificationCircuit.txt").getLines().toVector.flatMap(_.split(",")).map(_.toLong)) === 4931744)
   }
 }

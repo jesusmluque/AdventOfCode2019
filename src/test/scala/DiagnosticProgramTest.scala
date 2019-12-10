@@ -21,7 +21,7 @@ class DiagnosticProgramTest extends FlatSpec {
   }
 
   "The program from file with input 1" should "be 11933517" in {
-    val program = Source.fromResource("DiagnosticProgram.txt").getLines.flatMap(_.toString.split(",").map(_.toInt)).toVector
+    val program = Source.fromResource("DiagnosticProgram.txt").getLines.flatMap(_.toString.split(",").map(_.toLong)).toVector
     assert(DiagnosticProgram.execute(program, List(1)).output === List(11933517, 0, 0, 0, 0, 0, 0, 0, 0, 0))
   }
 
@@ -81,7 +81,29 @@ class DiagnosticProgramTest extends FlatSpec {
   }
 
   "The program from file with input 5" should "be 10428568" in {
-    val program = Source.fromResource("DiagnosticProgram.txt").getLines.flatMap(_.toString.split(",").map(_.toInt)).toVector
+    val program = Source.fromResource("DiagnosticProgram.txt").getLines.flatMap(_.toString.split(",").map(_.toLong)).toVector
     assert(DiagnosticProgram.execute(program, List(5)).output === List(10428568))
   }
+
+  "The program 109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99 with no input " should "be 999" in {
+    assert(DiagnosticProgram.execute(Vector(109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99), List()).output === List(109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99).reverse)
+  }
+
+  "The program 1102,34915192,34915192,7,4,7,99,0 with no input  " should "be a big number" in {
+    assert(DiagnosticProgram.execute(Vector(1102,34915192,34915192,7,4,7,99,0), List()).output === List(1219070632396864L))
+  }
+
+  "The program 104,1125899906842624,99 with no input  " should "be a big number" in {
+    assert(DiagnosticProgram.execute(Vector(104L,1125899906842624L,99L), List()).output === List(1125899906842624L))
+  }
+
+  "The program 1102,34463338,34463338,63,1007,63,34463338,63,1005,63,53,1101,3,0,1000,109,988,209,12,9,1000,209,6,209,3,203,0,204,0,99 with no input  " should "be a big number" in {
+    assert(DiagnosticProgram.execute(Vector(1102,34463338,34463338,63,1007,63,34463338,63,1005,63,53,1101,3,0,1000,109,988,209,12,9,1000,209,6,209,3,203,0,204,0,99), List(1)).output === List(1))
+  }
+
+  "The  Sensor boost program from file with input 1" should "be 10428568" in {
+    val program = Source.fromResource("SensorBoost.txt").getLines.flatMap(_.toString.split(",").map(_.toLong)).toVector
+    assert(DiagnosticProgram.execute(program, List(1)).output === List(10428568))
+  }
+
 }
