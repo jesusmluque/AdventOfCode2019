@@ -101,9 +101,9 @@ class DiagnosticProgramTest extends FlatSpec {
     assert(DiagnosticProgram.execute(Vector(1102,34463338,34463338,63,1007,63,34463338,63,1005,63,53,1101,3,0,1000,109,988,209,12,9,1000,209,6,209,3,203,0,204,0,99), List(1)).output === List(1))
   }
 
-  "The  Sensor boost program from file with input 1" should "be 10428568" in {
+  /*"The  Sensor boost program from file with input 1" should "be 10428568" in {
     val program = Source.fromResource("SensorBoost.txt").getLines.flatMap(_.toString.split(",").map(_.toLong)).toVector
     assert(DiagnosticProgram.execute(program, List(1)).output === List(10428568))
-  }
+  }*/
 
 }
