@@ -13,11 +13,16 @@ object DiagnosticProgram {
     def executeWithPointer(pointer: Int, instructions: Vector[Long], outputs: Status, input: List[Int], relativeBase: Int): Status = {
 
       def calculateValues(params: List[Int]) = {
-        (pointer + 1 to pointer + params.length).zipWithIndex.map {
+        val arguments = if (params.length == 3) params.take(2) else params
+        val resArg = if (params.length == 3) params.last else 0
+        ((pointer + 1 to pointer + arguments.length).zipWithIndex.map {
           case (idx, i) if params(i) == 0 => readInstructions(instructions, readInstructions(instructions, idx).toInt)
           case (idx, i) if params(i) == 1 => readInstructions(instructions, idx)
           case (idx, i) if params(i) == 2 => readInstructions(instructions, readInstructions(instructions, idx).toInt + relativeBase)
-        }
+        }, resArg match {
+          case 0 => readInstructions(instructions, pointer + arguments.length + 1).toInt
+          case 2 => readInstructions(instructions, pointer + arguments.length + 1).toInt + relativeBase
+        })
       }
 
       def completeParams(p: List[Int]) = if (p.length < 2) p ++ List(0) else p
@@ -45,16 +50,16 @@ object DiagnosticProgram {
           case 1 :: 0 :: p => {
             val params: List[Int] = completeParams(p)
             val values = calculateValues(params)
-            val newInstructions = updateInstructions(instructions, readInstructions(instructions, pointer + 1 + params.length).toInt, values.sum)
-            executeWithPointer(pointer + 2 + params.length,
-              newInstructions, Status(newInstructions, outputs.output, pointer + 2 + params.length, RUNNING), input, relativeBase = relativeBase)
+            val newInstructions = updateInstructions(instructions, values._2, values._1.sum)
+            executeWithPointer(pointer + 4,
+              newInstructions, Status(newInstructions, outputs.output, pointer + 4, RUNNING), input, relativeBase = relativeBase)
           }
           case 2 :: 0 :: p => {
             val params: List[Int] = completeParams(p)
             val values = calculateValues(params)
-            val newInstructions = updateInstructions(instructions, readInstructions(instructions, pointer + 1 + params.length).toInt, values.product)
-            executeWithPointer(pointer + 2 + params.length,
-              newInstructions, Status(newInstructions, outputs.output, pointer + 2 + params.length, RUNNING), input, relativeBase = relativeBase)
+            val newInstructions = updateInstructions(instructions, values._2, values._1.product)
+            executeWithPointer(pointer + 4,
+              newInstructions, Status(newInstructions, outputs.output, pointer + 4, RUNNING), input, relativeBase = relativeBase)
           }
           case 3 :: 0 :: p => {
             val index = p match {
@@ -76,7 +81,7 @@ object DiagnosticProgram {
           case 5 :: 0 :: p => {
             val params: List[Int] = completeParams(p)
             val values = calculateValues(params)
-            val newPointer = (if (values.head != 0) values(1) else pointer + 3).toInt
+            val newPointer = (if (values._1.head != 0) values._1(1) else pointer + 3).toInt
             executeWithPointer(newPointer,
               instructions, Status(instructions, outputs.output, newPointer, RUNNING), input, relativeBase = relativeBase)
 
@@ -84,7 +89,7 @@ object DiagnosticProgram {
           case 6 :: 0 :: p => {
             val params: List[Int] = completeParams(p)
             val values = calculateValues(params)
-            val newPointer = (if (values.head == 0) values(1) else pointer + 3).toInt
+            val newPointer = (if (values._1.head == 0) values._1(1) else pointer + 3).toInt
             executeWithPointer(newPointer,
               instructions, Status(instructions, outputs.output, newPointer, RUNNING), input, relativeBase = relativeBase)
 
@@ -92,28 +97,32 @@ object DiagnosticProgram {
           case 7 :: 0 :: p => {
             val params: List[Int] = completeParams(p)
             val values = calculateValues(params)
-            val index = if (values.length == 3) values(2).toInt else readInstructions(instructions, pointer + 3).toInt
-            val newInstructions = if (values.head < values(1)) updateInstructions(instructions, index, 1) else updateInstructions(instructions, index, 0)
+            val index = values._2
+            val newInstructions = if (values._1.head < values._1(1)) updateInstructions(instructions, index, 1) else updateInstructions(instructions, index, 0)
             executeWithPointer(pointer + 4,
               newInstructions, Status(newInstructions, outputs.output, pointer + 4, RUNNING), input, relativeBase = relativeBase)
           }
           case 8 :: 0 :: p => {
             val params: List[Int] = completeParams(p)
             val values = calculateValues(params)
-            val newInstructions = if (values.head == values(1)) updateInstructions(instructions,  readInstructions(instructions, pointer + 3).toInt, 1) else updateInstructions(instructions, readInstructions(instructions,  pointer + 3).toInt, 0)
+            val index = values._2
+            val newInstructions = if (values._1.head == values._1(1)) updateInstructions(instructions,  index, 1) else updateInstructions(instructions, index, 0)
             executeWithPointer(pointer + 4,
               newInstructions, Status(newInstructions, outputs.output, pointer + 4, RUNNING), input, relativeBase = relativeBase)
           }
           case 9 :: 0 :: p => {
-            val values = calculateValues(p)
+            val params: List[Int] = completeParams(p)
+            val values = calculateValues(params)
             val newPointer = pointer + 2
             executeWithPointer(newPointer,
-              instructions, Status(instructions, outputs.output, newPointer, RUNNING), input, relativeBase = relativeBase + values.head.toInt)
+              instructions, Status(instructions, outputs.output, newPointer, RUNNING), input, relativeBase = relativeBase + values._1.head.toInt)
           }
 
           case List(9, 9) => {
             Status(instructions, outputs.output, pointer, HALT)
           }
+
+
         }
       }
 

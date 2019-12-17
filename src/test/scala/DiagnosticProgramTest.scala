@@ -8,14 +8,6 @@ class DiagnosticProgramTest extends FlatSpec {
     assert(DiagnosticProgram.execute(Vector(3,0,4,0,99), List(1)).output === List(1))
   }
 
-  "The program 3,3,11102,2,3,4,10,4,10,99,5 with input 1 " should "return 1 " in {
-    assert(DiagnosticProgram.execute(Vector(3,3,11102,2,3,4,10,4,10,99,5), List(1)).output === List(12))
-  }
-
-  "The program 3,3,11102,2,3,4,10,4,10,1,5,6,16,4,16,99,8 with input 1 " should "return 1 " in {
-    assert(DiagnosticProgram.execute(Vector(3,3,11102,2,3,4,10,4,10,1101,5,6,16,4,16,99,8), List(1)).output === List(18,12))
-  }
-
   "A program 1,9,10,3,2,3,11,0,99,30,40,50 " should "becomes 3500,9,10,70,2,3,11,0,99,30,40,50" in {
     assert(DiagnosticProgram.execute(Vector(1,9,10,3,2,3,11,0,4,0,99,30,40,50), List(1)).output === List(2970))
   }
@@ -101,9 +93,14 @@ class DiagnosticProgramTest extends FlatSpec {
     assert(DiagnosticProgram.execute(Vector(1102,34463338,34463338,63,1007,63,34463338,63,1005,63,53,1101,3,0,1000,109,988,209,12,9,1000,209,6,209,3,203,0,204,0,99), List(1)).output === List(1))
   }
 
-  /*"The  Sensor boost program from file with input 1" should "be 10428568" in {
+  "The  Sensor boost program from file with input 1" should "be 10428568" in {
     val program = Source.fromResource("SensorBoost.txt").getLines.flatMap(_.toString.split(",").map(_.toLong)).toVector
-    assert(DiagnosticProgram.execute(program, List(1)).output === List(10428568))
-  }*/
+    assert(DiagnosticProgram.execute(program, List(1)).output === List(3507134798L))
+  }
+
+  "The  Sensor boost program from file with input 2" should "be 10428568" in {
+    val program = Source.fromResource("SensorBoost.txt").getLines.flatMap(_.toString.split(",").map(_.toLong)).toVector
+    assert(DiagnosticProgram.execute(program, List(2)).output === List(84513))
+  }
 
 }
